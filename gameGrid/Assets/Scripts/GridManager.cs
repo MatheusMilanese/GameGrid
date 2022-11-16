@@ -4,15 +4,41 @@ using UnityEngine;
 
 public class GridManager : MonoBehaviour
 {
-    // Start is called before the first frame update
+    [SerializeField] private int _width, _height;
+
+    [SerializeField] private Tile _tilePrefab;
+
+    [SerializeField] private Transform _cameraTransform;
+
+    private Dictionary<Vector2, Tile> _tiles = new Dictionary<Vector2, Tile>();
+
     void Start()
     {
-        
+        startGrid();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+    void startGrid(){
+        for(int x = 0; x < _width; x++){
+            for(int y = 0; y < _height; y++){
+                var spawnedTile = Instantiate(_tilePrefab, new Vector2(x, y), Quaternion.identity);
+                spawnedTile.name = $"Tile {x} {y}";
+
+                var isDiferent = (x%2 != y%2);
+                spawnedTile.setColor(isDiferent);
+
+                _tiles[new Vector2(x, y)] = spawnedTile;
+
+            }
+        }
+
+        _cameraTransform.position = new Vector3((float) _width/2 - 0.5f, (float) _height/2 - 0.5f, -10);
     }
+
+    public Tile getTileAtPosition(Vector2 pos){
+        if(_tiles.TryGetValue(pos, out var tile)){
+            return tile;
+        }
+        return null;
+    }
+
 }
